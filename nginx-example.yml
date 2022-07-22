@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-example-ns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-example-deploy
+  namespace: nginx-example-ns
+  labels:
+    app: nginx-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-example
+  template:
+    metadata:
+      labels:
+        app: nginx-example
+    spec:
+      volumes:
+      - name: log
+        emptyDir: {}
+      containers:
+      - name: nginx-example-container
+        image: 10.140.0.14:5000/nginx
+        env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+        ports:
+          - containerPort: 80
+            protocol: TCP
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1024Mi"
+          limits:
+            cpu: "1000m"
+            memory: "2048Mi"
