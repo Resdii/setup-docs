@@ -58,6 +58,7 @@ metadata:
   name: spring-example-ingress
   namespace: spring-example-ns
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
