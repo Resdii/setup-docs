@@ -1,8 +1,11 @@
+### NAMESPACE ###
 apiVersion: v1
 kind: Namespace
 metadata:
   name: noodev-system
 ---
+
+### LANDING PAGE ###
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -73,3 +76,74 @@ spec:
             name: noodev-landing-page-svc
             port:
               number: 8080
+---
+
+### GUIDE DOCS ###
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noodev-guide-docs-deploy
+  namespace: noodev-system
+  labels:
+    app: noodev-guide-docs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: noodev-guide-docs
+  template:
+    metadata:
+      labels:
+        app: noodev-guide-docs
+    spec:    
+      containers:
+      - name: noodev-guide-docs-container
+        image: 10.140.0.14:5000/noodev-guide-docs:1.0.0.stable
+        env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+        ports:
+        - containerPort: 443
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "1024Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noodev-guide-docs-svc
+  namespace: noodev-system
+  labels:
+    app: noodev-guide-docs
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 8009
+    targetPort: 8009
+  selector:
+    app: noodev-guide-docs
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: noodev-guide-docs-ingress
+  namespace: noodev-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: "docs.noo-dev.com"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: noodev-guide-docs-svc
+            port:
+              number: 8009
