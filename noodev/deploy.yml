@@ -147,3 +147,276 @@ spec:
             name: noodev-guide-docs-svc
             port:
               number: 80
+
+### CMS ###
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: noodev-core-cms-backend-cfm
+  namespace: noodev-system
+data:
+  noodev-core-cms-backend-config.json : |
+    {
+      "appId": "3395f1ca946543079288aa0228e5bd8d",
+      "appName": "NOODEV BASS SERVER",
+	  "mountPath": "/noodev-cms",
+      "publicServerURL": "http://localhost:1337/noodev-cms",
+      "masterKey": "AgKdD2HH5gc1MPDoN9cF8dzle27bBHm9em0TcqoI",
+      "javascriptKey": "xyAp51H18TQ6GhOj7Pg2KJCJxPNPFeCgt4HxqKL2",
+      "javaKey": "NmfFOPBpqTL061EMGe7xgqDphzoB9tNA6X8g8i80",
+      "restAPIKey": "QxIcoQmCLpnyp9fM9A719XOzFHeeJcgGkG7lOCFy",
+      "clientKey": "qyH2x9XxCEg8zztMlnEJNiLHIhaInYKnDKKq39Qz",
+      "databaseURI": "mongodb://app:ResdiiQTApp2022@database-server-1:27017,database-server-2:27017,database-server-3:27017/noodev-system-database?readPreference=secondary&replicaSet=mongo_rep",
+      "verifyUserEmails": false,
+      "useValidateKey": true,
+      "preventLoginWithUnverifiedEmail": true,
+      "fileUpload": {
+        "enableForAnonymousUser": false,
+        "enableForPublic": false,
+        "enableForAuthenticatedUser": false
+      },
+      "allowClientClassCreation": true,
+      "customPages": {},
+      "passwordPolicy": {
+        "validatorPattern": null,
+        "doNotAllowUsername": false,
+        "maxPasswordAge": null,
+        "maxPasswordHistory": null,
+        "resetTokenValidityDuration": 21178800
+      },
+      "sessionLength": 86400,
+      "databaseOptions": {
+        "serverSelectionTimeoutMS": 60000
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noodev-core-cms-backend-deploy
+  namespace: noodev-system
+spec:
+  selector:
+    matchLabels:
+      app: noodev-core-cms-backend
+  template:
+    metadata:
+      labels:
+        app: noodev-core-cms-backend
+    spec:
+      volumes:
+      - name: noodev-core-cms-backend-config
+        configMap:
+           name: noodev-core-cms-backend-cfm
+      containers:
+      - name: noodev-core-cms-backend-container
+        image: 34.81.200.132:5000/noodev-cms-backend:1.0.0.stable
+        env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+        command: ["npm","start",--,]
+        args: ["/etc/config/noodev-core-cms-backend-config.json"]
+        ports:
+        - containerPort: 1337
+        readinessProbe:
+          httpGet:
+            path: /noodev-cms/health
+            port: 1337
+          initialDelaySeconds: 1
+          timeoutSeconds: 1
+          periodSeconds: 3
+          failureThreshold: 100
+        volumeMounts:
+          - name: noodev-core-cms-backend-config
+            mountPath: "/etc/config"
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "1024Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1024Mi"
+      hostAliases:
+        - ip: "10.128.0.11"
+          hostnames:
+            - "database-server-1"
+        - ip: "10.128.0.10"
+          hostnames:
+            - "database-server-2"
+        - ip: "10.128.0.12"
+          hostnames:
+            - "database-server-3"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noodev-core-cms-backend-svc
+  namespace: noodev-system
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 1337
+    targetPort: 1337
+  selector:
+    app: noodev-core-cms-backend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: noodev-core-cms-backend-ingress
+  namespace: noodev-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: "cms-api.noo-dev.com"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: noodev-core-cms-backend-svc
+            port:
+              number: 1337
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: noodev-system
+  name: noodev-core-cms-webapp-cmf
+data:
+  noodev-core-cms-webapp-config.json : |
+    {
+      "apps": [
+        {
+          "serverURL": "http://cms-api.noo-dev.com/noodev-cms",
+          "appId": "3395f1ca946543079288aa0228e5bd8d",
+          "masterKey": "AgKdD2HH5gc1MPDoN9cF8dzle27bBHm9em0TcqoI",
+          "appName": "NOODEV BASS SERVER",
+          "appNameForURL": "3395f1ca946543079288aa0228e5bd8d",
+          "iconName": "",
+          "primaryBackgroundColor": "",
+          "secondaryBackgroundColor": "",
+          "excludeClasses": [],
+          "serverInfo": {
+            "features": {
+              "globalConfig": {
+                "create": true,
+                "read": true,
+                "update": true,
+                "delete": true
+              },
+              "hooks": false,
+              "cloudCode": false,
+              "logs": {
+                "level": true,
+                "size": true,
+                "order": true,
+                "until": true,
+                "from": true
+              },
+              "push": false,
+              "schemas": {
+                "addField": true,
+                "removeField": true,
+                "addClass": true,
+                "removeClass": true,
+                "clearAllDataFromClass": true,
+                "import": true,
+                "exportClass": true,
+                "editClassLevelPermissions": true,
+                "editPointerPermissions": true
+              }
+            }
+          }
+        }
+      ],
+      "iconsFolder": "icons",
+      "users": [
+        {
+          "user": "noodev_admin@resdii.com",
+          "pass": "123456@noodev",
+          "apps": [
+            {
+              "appId": "3395f1ca946543079288aa0228e5bd8d"
+            }
+          ]
+        }
+      ]
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noodev-core-cms-webapp-deploy
+  namespace: noodev-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: noodev-core-cms-webapp
+  template:
+    metadata:
+      labels:
+        app: noodev-core-cms-webapp
+    spec:
+      volumes:
+      - name: noodev-core-cms-webapp-config
+        configMap:
+           name: noodev-core-cms-webapp-cfm      
+      containers:
+      - name: noodev-core-cms-webapp-container
+        image: 34.81.200.132:5000/noodev-cms-webapp:1.0.0.stable
+        env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+        command: ["npm","start",--,--config]
+        args: [/etc/config/noodev-core-cms-webapp-config.json,--allowInsecureHTTP]
+        ports:
+        - containerPort: 4040
+        volumeMounts:
+          - name: noodev-core-cms-webapp-config
+            mountPath: "/etc/config"
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "1024Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noodev-core-cms-webapp-svc
+  namespace: noodev-system
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 4040
+    targetPort: 4040
+  selector:
+    app: noodev-core-cms-webapp
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: noodev-core-cms-webapp-ingress
+  namespace: noodev-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: "cms.noo-dev.com"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: noodev-core-cms-webapp-svc
+            port:
+              number: 4040
