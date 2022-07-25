@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: noodev-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noodev-landing-page-deploy
+  namespace: noodev-system
+  labels:
+    app: noodev-landing-page
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: noodev-landing-page
+  template:
+    metadata:
+      labels:
+        app: noodev-landing-page
+    spec:
+      containers:
+      - name: noodev-landing-page-container
+        image: 10.140.0.14:5000/noodev-landing-page:1.0.0.stable
+        securityContext:
+          runAsUser: 1000
+        env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "1024Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noodev-landing-page-svc
+  namespace: noodev-system
+  labels:
+    app: noodev-landing-page
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: noodev-landing-page
