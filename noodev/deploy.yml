@@ -167,7 +167,7 @@ data:
       "javaKey": "NmfFOPBpqTL061EMGe7xgqDphzoB9tNA6X8g8i80",
       "restAPIKey": "QxIcoQmCLpnyp9fM9A719XOzFHeeJcgGkG7lOCFy",
       "clientKey": "qyH2x9XxCEg8zztMlnEJNiLHIhaInYKnDKKq39Qz",
-      "databaseURI": "mongodb://app:ResdiiQTApp2022@database-server-1:27017,database-server-2:27017,database-server-3:27017/noodev-system-database?readPreference=secondary&replicaSet=mongo_rep",
+      "databaseURI": "mongodb://app:ResdiiATApp2022@database-server-1:27017,database-server-2:27017,database-server-3:27017/noodev-system-database?replicaSet=mongo_rep",
       "verifyUserEmails": false,
       "useValidateKey": true,
       "preventLoginWithUnverifiedEmail": true,
