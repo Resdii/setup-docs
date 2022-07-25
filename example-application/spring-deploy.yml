@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spring-example-ns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-example-deploy
+  namespace: spring-example-ns
+  labels:
+    app: spring-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-example
+  template:
+    metadata:
+      labels:
+        app: spring-example
+    spec:
+      containers:
+      - name: spring-example-container
+        image: gazgeek/springboot-helloworld
+        env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "512Mi"
+          limits:
+            cpu: "100m"
+            memory: "512Mi"
