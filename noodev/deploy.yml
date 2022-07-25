@@ -53,3 +53,23 @@ spec:
     targetPort: 8080
   selector:
     app: noodev-landing-page
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: noodev-landing-page-ingress
+  namespace: noodev-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /home/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: noodev-landing-page-svc
+            port:
+              number: 8080
