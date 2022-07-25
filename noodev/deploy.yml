@@ -159,7 +159,7 @@ data:
     {
       "appId": "3395f1ca946543079288aa0228e5bd8d",
       "appName": "NOODEV BASS SERVER",
-	  "mountPath": "/noodev-cms",
+      "mountPath": "/noodev-cms",
       "publicServerURL": "http://localhost:1337/noodev-cms",
       "masterKey": "AgKdD2HH5gc1MPDoN9cF8dzle27bBHm9em0TcqoI",
       "javascriptKey": "xyAp51H18TQ6GhOj7Pg2KJCJxPNPFeCgt4HxqKL2",
