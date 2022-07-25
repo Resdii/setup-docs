@@ -123,8 +123,8 @@ spec:
   ports:
   - name: http-port
     protocol: TCP
-    port: 8009
-    targetPort: 8009
+    port: 80
+    targetPort: 80
   selector:
     app: noodev-guide-docs
 ---
@@ -146,4 +146,4 @@ spec:
           service:
             name: noodev-guide-docs-svc
             port:
-              number: 8009
+              number: 80
