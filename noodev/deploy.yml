@@ -286,7 +286,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: noodev-system
-  name: noodev-core-cms-webapp-cmf
+  name: noodev-core-cms-webapp-cfm
 data:
   noodev-core-cms-webapp-config.json : |
     {
