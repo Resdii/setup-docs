@@ -610,3 +610,102 @@ spec:
             name: noodev-app-gateway-svc
             port:
               number: 8337
+---
+
+### CONSOLE WEB ###
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: noodev-system
+  name: noodev-console-webapp-cfm
+data:
+  noodev-console-webapp-config.json : |
+    {
+      "apiUrl": "http://api.noo-dev.com/",
+      "docUrl": "http://docs.noo-dev.com",
+      "generalMonitoring": "https://backendless-gs.viettel.vn/grafana/d/1vpzc6p7k/app-dashboard?orgId=1&kiosk=tv&var-appId={{appId}}",
+      "cloudCodeMonitoring": "https://backendless-gs.viettel.vn/grafana/d/XigIcet7z/microservice-dashboard?var-appId={{appId}}&kiosk=tv&var-serviceCode={{microservice}}",
+      "clusterMonitoring": "https://backendless-gs.viettel.vn/grafana/d/klRsn2t7k/cluster-dashboard?orgId=1&kiosk=tv",
+      "logMicroserviceMonitoring": "https://backendless-gs.viettel.vn/kibana/app/dashboards#/view/68494f20-531b-11ec-80b8-9152571cfd0b?embed=true&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1d,to:now))&_a=(description:'',expandedPanelId:'92e1836b-fc5b-47ff-894e-bd461230be1f',filters:!(),fullScreenMode:!f,options:(hidePanelTitles:!f,syncColors:!f,useMargins:!t),panels:!((embeddableConfig:(enhancements:(),hidePanelTitles:!t),gridData:(h:20,i:'92e1836b-fc5b-47ff-894e-bd461230be1f',w:38,x:0,y:0),id:f0b08c80-531a-11ec-80b8-9152571cfd0b,panelIndex:'92e1836b-fc5b-47ff-894e-bd461230be1f',type:search,version:'7.15.2')),query:(language:kuery,query:'kubernetes.labels.app:%22{{appId}}-ms-{{microservice}}-*%22'),tags:!(),timeRestore:!f,title:'Microservice%20log',viewMode:view)&show-time-filter=true&hide-filter-bar=true",
+      "schemaExcludes": ["_EmailTemplate", "_Counter", "_OTP", "KPI_LOG", "_Session"],
+      "sysTable": ["_Installation", "_Role", "_Session", "_User"],
+      "enableMonitoring": true
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noodev-console-webapp-deploy
+  namespace: noodev-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: noodev-console-webapp
+  template:
+    metadata:
+      labels:
+        app: noodev-console-webapp
+    spec:
+      volumes:
+      - name: noodev-console-webapp-config
+        configMap:
+           name: noodev-console-webapp-cfm       
+      containers:
+      - name: noodev-console-webapp-container
+        image: 10.140.0.14:5000/noodev-console-webapp.1.0.0_r1
+        env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+            - name: ENABLED_SSL
+              value: "true"
+            - name: MOUNT_PATH
+              value: "/console"
+        command: ["npm","start",--,]
+        args: ["/etc/config/noodev-console-webapp-config.json"]
+        ports:
+        - containerPort: 4040
+        volumeMounts:
+          - name: noodev-console-webapp-config
+            mountPath: "/etc/config"
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1024Mi"
+          limits:
+            cpu: "500m"
+            memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noodev-console-webapp-svc
+  namespace: noodev-system
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 4040
+    targetPort: 8337
+  selector:
+    app: noodev-console-webapp
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: noodev-console-webapp-ingress
+  namespace: noodev-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: "console.noo-dev.com"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: noodev-console-webapp-svc
+            port:
+              number: 4040
