@@ -494,3 +494,119 @@ spec:
           limits:
             cpu: "500m"
             memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noodev-backend-svc
+  namespace: noodev-system
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: noodev-backend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: noodev-backend-ingress
+  namespace: noodev-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: "api.noo-dev.com"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: noodev-backend-svc
+            port:
+              number: 8000
+---
+
+### APP GATEWAY ###
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noodev-app-gateway-deploy
+  namespace: noodev-system
+spec:
+  selector:
+    matchLabels:
+      app: noodev-app-gateway
+  template:
+    metadata:
+      labels:
+        app: noodev-app-gateway
+    spec:
+      containers:
+      - name: noodev-app-gateway-container
+        image: 10.140.0.14:5000/noodev-app-gateway:1.0.0.r1
+        env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+            - name: API_SERVER
+              value: http://noodev-backend-svc:8000
+            - name: ENABLE_CACHING
+              value: 'true'
+            - name: REDIS_CLUSTER_SERVER
+              value: '10.128.0.11:6379,10.128.0.11:6380,10.128.0.11:6381,10.128.0.10:6379,10.128.0.10:6380,10.128.0.10:6381,10.128.0.12:6379,10.128.0.12:6380,10.128.0.12:6381'
+            - name: REDIS_CLUSTER_PASSWORD
+              value: 'ResdiiQTHT2022'
+        ports:
+        - containerPort: 8337
+        readinessProbe:
+          httpGet:
+            path: /health/check
+            port: 8337
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
+          periodSeconds: 3
+          failureThreshold: 100
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1024Mi"
+          limits:
+            cpu: "500m"
+            memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noodev-app-gateway-svc
+  namespace: noodev-system
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 8337
+    targetPort: 8337
+  selector:
+    app: noodev-app-gateway
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: noodev-app-gateway-ingress
+  namespace: noodev-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: "app.noo-dev.com"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: noodev-app-gateway-svc
+            port:
+              number: 8337
