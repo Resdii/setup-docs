@@ -554,7 +554,7 @@ spec:
             - name: API_SERVER
               value: http://noodev-backend-svc:8000
             - name: ENABLE_CACHING
-              value: 'true'
+              value: 'false'
             - name: REDIS_CLUSTER_SERVER
               value: '34.173.164.43:6379,34.173.164.43:6380,34.173.164.43:6381,34.170.148.247:6379,34.170.148.247:6380,34.170.148.247:6381,34.170.125.102:6379,34.170.125.102:6380,34.170.125.102:6381'
             - name: REDIS_CLUSTER_PASSWORD
