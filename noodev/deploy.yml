@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: noodev-landing-page-container
-        image: 10.140.0.14:5000/noodev-landing-page:1.0.0.stable
+        image: 34.81.200.132:5000/noodev-landing-page:1.0.0.stable
         securityContext:
           runAsUser: 1000
         env:
@@ -98,7 +98,7 @@ spec:
     spec:    
       containers:
       - name: noodev-guide-docs-container
-        image: 10.140.0.14:5000/noodev-guide-docs:1.0.0.stable
+        image: 34.81.200.132:5000/noodev-guide-docs:1.0.0.stable
         env:
             - name: TZ
               value: Asia/Ho_Chi_Minh
@@ -211,7 +211,7 @@ spec:
            name: noodev-core-cms-backend-cfm
       containers:
       - name: noodev-core-cms-backend-container
-        image: 10.140.0.14:5000/noodev-cms-backend:1.0.0.stable
+        image: 34.81.200.132:5000/noodev-cms-backend:1.0.0.stable
         env:
             - name: TZ
               value: Asia/Ho_Chi_Minh
@@ -369,7 +369,7 @@ spec:
            name: noodev-core-cms-webapp-cfm      
       containers:
       - name: noodev-core-cms-webapp-container
-        image: 10.140.0.14:5000/noodev-cms-webapp:1.0.0.stable
+        image: 34.81.200.132:5000/noodev-cms-webapp:1.0.0.stable
         env:
             - name: TZ
               value: Asia/Ho_Chi_Minh
@@ -440,7 +440,7 @@ spec:
     spec:
       containers:
       - name: noodev-backend-container
-        image: 10.140.0.14:5000/noodev-backend:1.0.0.r2
+        image: 34.81.200.132:5000/noodev-backend:1.0.0.r2
         env:
             - name: TZ
               value: Asia/Ho_Chi_Minh
@@ -547,7 +547,7 @@ spec:
     spec:
       containers:
       - name: noodev-app-gateway-container
-        image: 10.140.0.14:5000/noodev-app-gateway:1.0.0.r1
+        image: 34.81.200.132:5000/noodev-app-gateway:1.0.0.r1
         env:
             - name: TZ
               value: Asia/Ho_Chi_Minh
@@ -653,7 +653,7 @@ spec:
            name: noodev-console-webapp-cfm       
       containers:
       - name: noodev-console-webapp-container
-        image: 10.140.0.14:5000/noodev-console-webapp.1.0.0_r1
+        image: 34.81.200.132:5000/noodev-console-webapp.1.0.0_r1
         env:
             - name: TZ
               value: Asia/Ho_Chi_Minh
