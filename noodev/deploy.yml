@@ -440,7 +440,7 @@ spec:
     spec:
       containers:
       - name: noodev-backend-container
-        image: 34.81.200.132:5000/noodev-backend:1.0.0.r4
+        image: 34.81.200.132:5000/noodev-backend:1.0.0.r5
         env:
             - name: TZ
               value: Asia/Ho_Chi_Minh
