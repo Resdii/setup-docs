@@ -686,7 +686,7 @@ spec:
   - name: http-port
     protocol: TCP
     port: 4040
-    targetPort: 8337
+    targetPort: 4040
   selector:
     app: noodev-console-webapp
 ---
