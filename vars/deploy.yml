@@ -3,6 +3,8 @@ kind: Namespace
 metadata:
   name: vars
 ---
+
+### BACKEND ###
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -86,3 +88,70 @@ spec:
             name: vars-api-svc
             port:
               number: 8080
+---
+
+### FRONTEND ###
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vars-frontend-deploy
+  namespace: vars
+  labels:
+    app: vars-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vars-frontend
+  template:
+    metadata:
+      labels:
+        app: vars-frontend
+    spec:
+      containers:
+      - name: vars-frontend-container
+        image: 34.81.200.132:5000/realtor-frontend:1.0.0.r33
+        ports:
+        - name: http
+          containerPort: 80
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1024Mi"
+          limits:
+            cpu: "500m"
+            memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vars-frontend-svc
+  namespace: vars
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    app: vars-frontend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vars-frontend-ingress
+  namespace: vars
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "vars.vn"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: vars-frontend-svc
+            port:
+              number: 80
