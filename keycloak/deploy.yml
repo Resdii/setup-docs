@@ -26,9 +26,9 @@ spec:
         args: ["start-dev"]
         env:
         - name: KEYCLOAK_ADMIN
-          value: "kc-admin"
+          value: "admin"
         - name: KEYCLOAK_ADMIN_PASSWORD
-          value: "ResdiiQTHT2022"
+          value: "Z@HG$3_BQXKVzV4j"
         - name: KC_PROXY
           value: "edge"
         - name: KC_DB
@@ -41,8 +41,6 @@ spec:
           value: "ResdiiQTHT2022"
         - name: KC_HOSTNAME_STRICT_HTTPS
           value: "false"
-        - name: KC_HOSTNAME
-          value: "kc.resdii.com"
         ports:
         - name: http
           containerPort: 8080
