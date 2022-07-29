@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vars
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vars-api-deploy
+  namespace: vars
+  labels:
+    app: vars-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vars-api
+  template:
+    metadata:
+      labels:
+        app: vars-api
+    spec:
+      containers:
+      - name: vars-api-container
+        image: 34.81.200.132:5000/realtor-backend:1.0.0.r54
+        env:
+        - name: ENV_NOODEV_URL
+          value: "http://app.noo-dev.com"
+        - name: ENV_NOODEV_APP_ID
+          value: "037d52eea5ae3445a3f6bea0d4ce45a9"
+        - name: ENV_QR_CODE_PATH_PATTERN
+          value: "https://vars.vn/qr/{{code}}"
+        - name: ENV_KC_URL
+          value: "http://keycloak-svc.keycloak:8080"
+        - name: ENV_KC_ADMIN_REALM
+          value: "master"
+        - name: ENV_KC_APP_REALM
+          value: "realtor"
+        - name: ENV_KC_ADMIN_CLIENT
+          value: "admin-cli"
+        - name: ENV_KC_ADMIN_USERNAME
+          value: "admin"
+        - name: ENV_KC_ADMIN_PASSWORD
+          value: "Z@HG$$3_BQXKVzV4j"
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1024Mi"
+          limits:
+            cpu: "500m"
+            memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vars-api-svc
+  namespace: vars
+spec:
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: vars-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vars-api-ingress
+  namespace: vars
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "api.vars.vn"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: vars-api-svc
+            port:
+              number: 8080
