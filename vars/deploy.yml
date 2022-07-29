@@ -30,6 +30,8 @@ spec:
           value: "http://app.noo-dev.com"
         - name: ENV_NOODEV_APP_ID
           value: "037d52eea5ae3445a3f6bea0d4ce45a9"
+        - name: ENV_NOODEV_JAVA_KEY
+          value: "YXoH5ik15Yi0XmdpgG5DdfnLnlT2jHzizEQMgAbz"
         - name: ENV_QR_CODE_PATH_PATTERN
           value: "https://vars.vn/qr/{{code}}"
         - name: ENV_KC_URL
@@ -54,6 +56,10 @@ spec:
           limits:
             cpu: "500m"
             memory: "1024Mi"
+      hostAliases:
+        - ip: "34.135.67.125"
+          hostnames:
+            - "app.noo-dev.com"
 ---
 apiVersion: v1
 kind: Service
