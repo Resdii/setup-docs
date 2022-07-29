@@ -26,9 +26,9 @@ spec:
         args: ["start-dev"]
         env:
         - name: KEYCLOAK_ADMIN
-          value: "admin"
+          value: "kc-admin"
         - name: KEYCLOAK_ADMIN_PASSWORD
-          value: "admin"
+          value: "ResdiiQTHT2022"
         - name: KC_PROXY
           value: "edge"
         - name: KC_DB
