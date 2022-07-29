@@ -39,6 +39,8 @@ spec:
           value: "resdii-admin"
         - name: KC_DB_PASSWORD
           value: "ResdiiQTHT2022"
+        - name: KC_HOSTNAME_STRICT_HTTPS
+          value: "false"
         ports:
         - name: http
           containerPort: 8080
