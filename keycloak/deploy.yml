@@ -41,6 +41,8 @@ spec:
           value: "ResdiiQTHT2022"
         - name: KC_HOSTNAME_STRICT_HTTPS
           value: "false"
+        - name: KC_HOSTNAME
+          value: "kc.resdii.com"
         ports:
         - name: http
           containerPort: 8080
